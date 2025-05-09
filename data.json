@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "username": "testuser",
+      "email": "petezahgames@gmail.com",
+      "password": "testpass",
+      "ip": "::1",
+      "progress": {},
+      "isVerified": true,
+      "verificationToken": "a9b4ba583181df39cb27ff9794eb01f42102ca6161b0da65cc431d41a4b3a8fe"
+    }
+  ]
+}

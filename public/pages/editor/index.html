@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodingHub Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3b 100%);
+            color: #d1d5db;
+            overflow-x: hidden;
+            margin: 0;
+        }
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to right, #1a1a3b, #2b2b5c);
+            border-bottom: 1px solid #3b3b7a;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 1000;
+        }
+        .top-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .top-nav .nav-links {
+            display: flex;
+            align-items: center;
+            margin-left: 2rem;
+        }
+        .top-nav .nav-links a {
+            color: #d1d5db;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+        .top-nav .nav-links a:hover {
+            color: #ffffff;
+        }
+        .top-nav .nav-links a.active {
+            color: #ffffff;
+            background: #6366f1;
+            border-radius: 6px;
+        }
+        .top-nav .create-dropdown {
+            position: relative;
+            margin-left: 1rem;
+        }
+        .top-nav .create-dropdown button {
+            background: #6366f1;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .top-nav .create-dropdown button:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+        .top-nav .create-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #2b2b5c;
+            border: 1px solid #3b3b7a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            z-index: 1001;
+        }
+        .top-nav .create-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .top-nav .create-dropdown .dropdown-content a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            text-decoration: none;
+        }
+        .top-nav .create-dropdown .dropdown-content a:hover {
+            background: #3b3b7a;
+            color: #ffffff;
+        }
+        .top-nav .profile-dropdown {
+            position: relative;
+            margin-left: auto;
+        }
+        .top-nav .profile-dropdown button {
+            background: none;
+            border: none;
+            color: #d1d5db;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .top-nav .profile-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #2b2b5c;
+            border: 1px solid #3b3b7a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            z-index: 1001;
+        }
+        .top-nav .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .top-nav .profile-dropdown .dropdown-content a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            text-decoration: none;
+        }
+        .top-nav .profile-dropdown .dropdown-content a:hover {
+            background: #3b3b7a;
+            color: #ffffff;
+        }
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: calc(100vh - 60px);
+            width: 200px;
+            background: #1a1a3b;
+            border-right: 1px solid #3b3b7a;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+        .sidebar-toggle {
+            position: fixed;
+            top: 70px;
+            left: 1rem;
+            z-index: 1001;
+            display: none;
+            background: #2b2b5c;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+        .sidebar h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+        .sidebar ul li {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            color: #d1d5db;
+        }
+        .sidebar ul li:hover {
+            background: #2b2b5c;
+            color: #ffffff;
+        }
+        .sidebar ul li.active {
+            background: #6366f1;
+            color: #ffffff;
+        }
+        .sidebar ul li svg {
+            margin-right: 0.75rem;
+        }
+        .tips-dropdown {
+            position: relative;
+            margin-top: 1rem;
+        }
+        .tips-dropdown button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background: none;
+            border: none;
+            color: #d1d5db;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .tips-dropdown button:hover {
+            background: #2b2b5c;
+        }
+        .tips-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            background: #2b2b5c;
+            border: 1px solid #3b3b7a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            width: 250px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            z-index: 1001;
+        }
+        .tips-dropdown.open .dropdown-content {
+            display: block;
+        }
+        .tips-dropdown .dropdown-content p {
+            font-size: 0.875rem;
+            color: #d1d5db;
+            margin-bottom: 0.5rem;
+        }
+        .main-content {
+            margin-left: 200px;
+            margin-top: 60px;
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+        .file-explorer {
+            background: #0a0a23;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .file-explorer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .file-explorer table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .file-explorer th, .file-explorer td {
+            text-align: left;
+            padding: 0.75rem;
+            color: #d1d5db;
+            border-bottom: 1px solid #3b3b7a;
+        }
+        .file-explorer tr:hover {
+            background: #2b2b5c;
+        }
+        .file-explorer .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .file-explorer .dropdown-btn {
+            background: none;
+            border: none;
+            color: #6366f1;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .file-explorer .dropdown-btn:hover {
+            color: #4f46e5;
+        }
+        .file-explorer .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #2b2b5c;
+            border: 1px solid #3b3b7a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            z-index: 1001;
+        }
+        .file-explorer .dropdown-content.show {
+            display: block;
+        }
+        .file-explorer .dropdown-content button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #d1d5db;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+        }
+        .file-explorer .dropdown-content button:hover {
+            background: #3b3b7a;
+            color: #ffffff;
+        }
+        .editor-pane {
+            background: #0a0a23;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+        .editor-pane.active {
+            display: flex;
+        }
+        .editor-banner {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        .editor-pane textarea {
+            width: 100%;
+            height: 40vh;
+            background: transparent;
+            color: #d1d5db;
+            border: none;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            resize: none;
+        }
+        .editor-pane textarea:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 2px #6366f1;
+        }
+        .preview-pane {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 120px);
+            max-width: 100%;
+            position: relative;
+            display: none;
+        }
+        .preview-pane.active {
+            display: block;
+        }
+        .preview-pane iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .fullscreen {
+            height: 100vh !important;
+            width: 100vw !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 0 !important;
+            z-index: 1002;
+        }
+        .control-button {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: #1a1a3b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1003;
+            max-width: 90vw;
+            width: 400px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .popup.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none;
+        }
+        .popup-overlay.show {
+            opacity: 1;
+            display: block;
+        }
+        .editor-pane textarea::-webkit-scrollbar,
+        .preview-pane iframe::-webkit-scrollbar {
+            width: 8px;
+        }
+        .editor-pane textarea::-webkit-scrollbar-track,
+        .preview-pane iframe::-webkit-scrollbar-track {
+            background: #2b2b5c;
+            border-radius: 4px;
+        }
+        .editor-pane textarea::-webkit-scrollbar-thumb,
+        .preview-pane iframe::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 4px;
+        }
+        .editor-pane textarea::-webkit-scrollbar-thumb:hover,
+        .preview-pane iframe::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .top-nav .nav-links {
+                display: none;
+            }
+            .editor-pane textarea {
+                height: 50vh;
+            }
+            .preview-pane {
+                height: calc(100vh - 140px);
+            }
+            .tips-dropdown .dropdown-content {
+                width: 200px;
+                max-height: calc(100vh - 150px);
+            }
+            .file-explorer .dropdown-content {
+                right: -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a href="/dashboard" class="logo" id="project-name">CodingHub</a>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/projects" class="active">Projects</a>
+            <a href="/repos">Repositories</a>
+            <div class="create-dropdown">
+                <button>+</button>
+                <div class="dropdown-content">
+                    <a href="/dashboard" id="new-project">New Project</a>
+                    <a href="/dashboard" id="new-repo">New Repository</a>
+                </div>
+            </div>
+        </div>
+        <div class="profile-dropdown">
+            <button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="ml-2">Profile</span>
+            </button>
+            <div class="dropdown-content">
+                <a href="/profile">Your Profile</a>
+                <a href="/settings">Settings</a>
+                <a href="/logout">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>Editor Controls</h2>
+        <ul>
+            <li id="editor-link" class="active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10z"></path><path d="M15 7H9"></path><path d="M15 11H9"></path><path d="M13 15H9"></path></svg>
+                Editor
+            </li>
+            <li id="preview-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Preview
+            </li>
+            <li id="save-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Save
+            </li>
+            <li id="share-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                Share
+            </li>
+            <li id="deploy-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3"></path><path d="m6 11 6 6 6-6"></path><path d="M19 21H5"></path></svg>
+                Deploy
+            </li>
+        </ul>
+        <div class="tips-dropdown" id="tips-dropdown">
+            <button id="tips-toggle">
+                Coding Tips
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-auto"><path d="M9 18l6-6-6-6"></path></svg>
+            </button>
+            <div class="dropdown-content">
+                <p>Use semantic HTML for better accessibility.</p>
+                <p>Leverage CSS variables for easier theme management.</p>
+                <p>Wrap async code in try-catch for error handling.</p>
+                <p>Optimize images to improve page load times.</p>
+            </div>
+        </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container mx-auto">
+            <h1 class="text-3xl font-bold text-white mb-6">Code Editor</h1>
+            <div class="file-explorer" id="file-explorer">
+                <div class="file-explorer-header">
+                    <h2 class="text-lg font-semibold">Files</h2>
+                    <button id="new-file" class="control-button bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700">New File</button>
+                </div>
+                <table id="file-list">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="editor-pane" id="editor-pane">
+                <div class="editor-banner" id="editor-banner">Editing File</div>
+                <textarea id="file-content" placeholder="Edit your file content here..."></textarea>
+            </div>
+            <div class="preview-pane" id="preview-pane">
+                <iframe id="preview"></iframe>
+                <button class="fullscreen-btn" id="fullscreen-btn-alt" title="Toggle Fullscreen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popups -->
+    <div id="popup-overlay" class="popup-overlay"></div>
+    <div id="popup" class="popup">
+        <div id="popup-content" class="text-white"></div>
+        <div class="flex justify-end mt-4 space-x-2">
+            <button id="copy-btn" class="control-button bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 hidden">Copy</button>
+            <button id="close-popup" class="control-button bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700">Close</button>
+        </div>
+    </div>
+    <div id="deploy-popup" class="popup">
+        <div class="text-white">
+            <h2 class="text-xl font-bold mb-4">Deploy Project</h2>
+            <div class="mb-4">
+                <label class="block mb-1">Username</label>
+                <input id="deploy-username" type="text" placeholder="e.g., anonymous" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label class="block mb-1">Deployment Name</label>
+                <input id="deploy-name" type="text" placeholder="e.g., my-project" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+        </div>
+        <div class="flex justify-end mt-4 space-x-2">
+            <button id="submit-deploy" class="control-button bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700">Deploy</button>
+            <button id="cancel-deploy" class="control-button bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700">Cancel</button>
+        </div>
+    </div>
+    <div id="new-file-popup" class="popup">
+        <div class="text-white">
+            <h2 class="text-xl font-bold mb-4">Create New File</h2>
+            <div class="mb-4">
+                <label class="block mb-1">File Name</label>
+                <input id="new-file-name" type="text" placeholder="e.g., index.html" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+        </div>
+        <div class="flex justify-end mt-4 space-x-2">
+            <button id="create-file" class="control-button bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700">Create</button>
+            <button id="cancel-new-file" class="control-button bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700">Cancel</button>
+        </div>
+    </div>
+    <div id="name-project-popup" class="popup">
+        <div class="text-white">
+            <h2 class="text-xl font-bold mb-4">Name Your Project</h2>
+            <div class="mb-4">
+                <label class="block mb-1">Project Name</label>
+                <input id="project-name-input" type="text" placeholder="e.g., My Project" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+        </div>
+        <div class="flex justify-end mt-4 space-x-2">
+            <button id="submit-project-name" class="control-button bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700">Save</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script>
+        const preview = document.getElementById('preview');
+        const saveBtn = document.getElementById('save-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const deployBtn = document.getElementById('deploy-btn');
+        const previewBtn = document.getElementById('preview-btn');
+        const fullscreenBtnAlt = document.getElementById('fullscreen-btn-alt');
+        const previewPane = document.getElementById('preview-pane');
+        const fileExplorer = document.getElementById('file-explorer');
+        const popup = document.getElementById('popup');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const popupContent = document.getElementById('popup-content');
+        const closePopup = document.getElementById('close-popup');
+        const copyBtn = document.getElementById('copy-btn');
+        const deployPopup = document.getElementById('deploy-popup');
+        const deployUsername = document.getElementById('deploy-username');
+        const deployName = document.getElementById('deploy-name');
+        const submitDeploy = document.getElementById('submit-deploy');
+        const cancelDeploy = document.getElementById('cancel-deploy');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const editorLink = document.getElementById('editor-link');
+        const tipsDropdown = document.getElementById('tips-dropdown');
+        const tipsToggle = document.getElementById('tips-toggle');
+        const fileList = document.querySelector('#file-list tbody');
+        const newFileBtn = document.getElementById('new-file');
+        const newFilePopup = document.getElementById('new-file-popup');
+        const newFileName = document.getElementById('new-file-name');
+        const createFile = document.getElementById('create-file');
+        const cancelNewFile = document.getElementById('cancel-new-file');
+        const editorPane = document.getElementById('editor-pane');
+        const editorBanner = document.getElementById('editor-banner');
+        const fileContent = document.getElementById('file-content');
+        const nameProjectPopup = document.getElementById('name-project-popup');
+        const projectNameInput = document.getElementById('project-name-input');
+        const submitProjectName = document.getElementById('submit-project-name');
+        const projectNameDisplay = document.getElementById('project-name');
+
+        let currentFile = null;
+        let projectId = null;
+        const firstClick = {
+            editor: true,
+            preview: true,
+            save: true,
+            share: true,
+            deploy: true
+        };
+
+        // Get project ID from URL
+        function getProjectId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('project');
+        }
+
+        // Initialize default project
+        function initializeDefaultProject() {
+            const files = getFiles();
+            if (!Object.keys(files).length) {
+                files['index.html'] = `<h1>Hello, CodingHub!</h1>\n<p>Start coding here...</p>`;
+                files['styles.css'] = `h1 { color: #6366f1; text-align: center; }\np { font-size: 18px; }`;
+                files['script.js'] = `console.log('Welcome to CodingHub!');`;
+                saveFiles(files);
+            }
+            updateFileList();
+        }
+
+        function getFiles() {
+            const files = localStorage.getItem(`codinghub_project_${projectId}`);
+            return files ? JSON.parse(files) : {};
+        }
+
+        function saveFiles(files) {
+            localStorage.setItem(`codinghub_project_${projectId}`, JSON.stringify(files));
+        }
+
+        function getFileType(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            switch (ext) {
+                case 'html': return 'HTML';
+                case 'css': return 'CSS';
+                case 'js': return 'JavaScript';
+                default: return 'Text';
+            }
+        }
+
+        function updateFileList() {
+            const files = getFiles();
+            fileList.innerHTML = '';
+            Object.keys(files).forEach(fileName => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fileName}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="dropdown-btn" data-file="${fileName}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="edit-btn" data-file="${fileName}">Edit</button>
+                                <button class="rename-btn" data-file="${fileName}">Rename</button>
+                                <button class="delete-btn" data-file="${fileName}">Delete</button>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                fileList.appendChild(row);
+            });
+
+            // Attach dropdown toggle listeners
+            document.querySelectorAll('.dropdown-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const dropdownContent = btn.nextElementSibling;
+                    const isOpen = dropdownContent.classList.contains('show');
+                    document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+                    if (!isOpen) {
+                        dropdownContent.classList.add('show');
+                    }
+                });
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+            }
+        });
+
+        // Event delegation for dropdown actions
+        fileList.addEventListener('click', (e) => {
+            const target = e.target;
+            const fileName = target.dataset.file;
+            if (!fileName) return;
+
+            const files = getFiles();
+            if (target.classList.contains('edit-btn')) {
+                console.log(`Editing file: ${fileName}`);
+                currentFile = fileName;
+                fileContent.value = files[fileName] || '';
+                editorBanner.textContent = `Editing ${fileName} (${getFileType(fileName)})`;
+                editorPane.classList.add('active');
+                fileExplorer.style.display = 'block';
+                previewPane.classList.remove('active');
+                setActiveSidebarItem(editorLink);
+                fileContent.focus();
+                document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+            } else if (target.classList.contains('rename-btn')) {
+                console.log(`Renaming file: ${fileName}`);
+                const newName = prompt('Enter new file name:', fileName);
+                if (newName && newName !== fileName) {
+                    if (files[newName]) {
+                        showPopup('File name already exists.');
+                        return;
+                    }
+                    files[newName] = files[fileName];
+                    delete files[fileName];
+                    if (currentFile === fileName) {
+                        currentFile = newName;
+                        editorBanner.textContent = `Editing ${currentFile} (${getFileType(currentFile)})`;
+                    }
+                    saveFiles(files);
+                    updateFileList();
+                }
+                document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+            } else if (target.classList.contains('delete-btn')) {
+                console.log(`Deleting file: ${fileName}`);
+                if (confirm(`Delete ${fileName}?`)) {
+                    delete files[fileName];
+                    if (currentFile === fileName) {
+                        currentFile = null;
+                        editorPane.classList.remove('active');
+                    }
+                    saveFiles(files);
+                    updateFileList();
+                }
+                document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+            }
+        });
+
+        function updatePreview() {
+            try {
+                const files = getFiles();
+                let html = '';
+                let css = '';
+                let js = '';
+                Object.keys(files).forEach(fileName => {
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    if (ext === 'html') html += files[fileName];
+                    else if (ext === 'css') css += files[fileName];
+                    else if (ext === 'js') js += files[fileName];
+                });
+                const content = `
+                    <!DOCTYPE html>
+                    <html>
+                        <head>
+                            <style>${css}</style>
+                        </head>
+                        <body>
+                            ${html}
+                            <script>${js}<\/script>
+                        </body>
+                    </html>`;
+                preview.contentWindow.document.open();
+                preview.contentWindow.document.write(content);
+                preview.contentWindow.document.close();
+            } catch (e) {
+                showPopup('Error updating preview: ' + e.message);
+            }
+        }
+
+        function showPopup(message, copyText) {
+            popupContent.textContent = message;
+            copyBtn.classList.toggle('hidden', !copyText);
+            if (copyText) {
+                copyBtn.textContent = 'Copy';
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(copyText).then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+                    }).catch(() => {
+                        copyBtn.textContent = 'Error';
+                        setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+                    });
+                };
+            }
+            popup.classList.add('show');
+            popupOverlay.classList.add('show');
+        }
+
+        function hidePopup() {
+            popup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        }
+
+        function showDeployPopup() {
+            deployPopup.classList.add('show');
+            popupOverlay.classList.add('show');
+            deployUsername.value = '';
+            deployName.value = '';
+            deployUsername.focus();
+        }
+
+        function hideDeployPopup() {
+            deployPopup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        }
+
+        function showNewFilePopup() {
+            newFilePopup.classList.add('show');
+            popupOverlay.classList.add('show');
+            newFileName.value = '';
+            newFileName.focus();
+        }
+
+        function hideNewFilePopup() {
+            newFilePopup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        }
+
+        function showNameProjectPopup() {
+            nameProjectPopup.classList.add('show');
+            popupOverlay.classList.add('show');
+            projectNameInput.value = '';
+            projectNameInput.focus();
+        }
+
+        function hideNameProjectPopup() {
+            nameProjectPopup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        }
+
+        function setActiveSidebarItem(item) {
+            document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+            item.classList.add('active');
+        }
+
+        newFileBtn.addEventListener('click', () => {
+            console.log('New file button clicked');
+            showNewFilePopup();
+        });
+
+        createFile.addEventListener('click', () => {
+            const fileName = newFileName.value.trim();
+            if (!fileName) {
+                showPopup('Please enter a file name.');
+                return;
+            }
+            const files = getFiles();
+            if (files[fileName]) {
+                showPopup('File name already exists.');
+                return;
+            }
+            files[fileName] = '';
+            saveFiles(files);
+            updateFileList();
+            hideNewFilePopup();
+            currentFile = fileName;
+            fileContent.value = '';
+            editorBanner.textContent = `Editing ${fileName} (${getFileType(fileName)})`;
+            editorPane.classList.add('active');
+            fileExplorer.style.display = 'block';
+            previewPane.classList.remove('active');
+            setActiveSidebarItem(editorLink);
+            fileContent.focus();
+        });
+
+        cancelNewFile.addEventListener('click', hideNewFilePopup);
+
+        fileContent.addEventListener('input', () => {
+            if (currentFile) {
+                const files = getFiles();
+                files[currentFile] = fileContent.value;
+                saveFiles(files);
+            }
+        });
+
+        editorLink.addEventListener('click', () => {
+            setActiveSidebarItem(editorLink);
+            previewPane.classList.remove('active');
+            fileExplorer.style.display = 'block';
+            if (currentFile) {
+                editorPane.classList.add('active');
+                if (firstClick.editor) {
+                    showPopup(`Editing ${currentFile}.`);
+                    firstClick.editor = false;
+                }
+            } else {
+                editorPane.classList.remove('active');
+                if (firstClick.editor) {
+                    showPopup('Select a file to edit.');
+                    firstClick.editor = false;
+                }
+            }
+        });
+
+        previewBtn.addEventListener('click', () => {
+            setActiveSidebarItem(previewBtn);
+            fileExplorer.style.display = 'none';
+            editorPane.classList.remove('active');
+            previewPane.classList.add('active');
+            updatePreview();
+            if (firstClick.preview) {
+                showPopup('Preview updated with current project files.');
+                firstClick.preview = false;
+            }
+        });
+
+        saveBtn.addEventListener('click', () => {
+            setActiveSidebarItem(saveBtn);
+            try {
+                const files = getFiles();
+                localStorage.setItem(`codinghub_project_backup_${projectId}`, JSON.stringify(files));
+                if (firstClick.save) {
+                    showPopup('Project saved locally!');
+                    firstClick.save = false;
+                }
+            } catch (e) {
+                showPopup('Error saving project: ' + e.message);
+            }
+        });
+
+        shareBtn.addEventListener('click', () => {
+            setActiveSidebarItem(shareBtn);
+            try {
+                const files = getFiles();
+                const encoded = btoa(JSON.stringify(files));
+                const shareUrl = `${window.location.origin}/editor.html?project=${projectId}&code=${encoded}`;
+                if (firstClick.share) {
+                    showPopup(`Shareable URL: ${shareUrl}`, shareUrl);
+                    firstClick.share = false;
+                } else {
+                    showPopup(`Shareable URL: ${shareUrl}`, shareUrl);
+                }
+            } catch (e) {
+                showPopup('Error generating share URL: ' + e.message);
+            }
+        });
+
+        deployBtn.addEventListener('click', () => {
+            setActiveSidebarItem(deployBtn);
+            showDeployPopup();
+            if (firstClick.deploy) {
+                firstClick.deploy = false;
+            }
+        });
+
+        submitDeploy.addEventListener('click', () => {
+            const username = deployUsername.value.trim();
+            const deploymentName = deployName.value.trim();
+            if (!username || !deploymentName) {
+                showPopup('Please provide both a username and deployment name.');
+                return;
+            }
+            if (!/^[a-zA-Z0-9_-]+$/.test(username) || !/^[a-zA-Z0-9_-]+$/.test(deploymentName)) {
+                showPopup('Username and deployment name must contain only letters, numbers, underscores, or hyphens.');
+                return;
+            }
+            try {
+                const files = getFiles();
+                const deployKey = `deploy_${username}_${deploymentName}`;
+                if (localStorage.getItem(deployKey)) {
+                    showPopup('This deployment name is already taken for this user. Choose a different name.');
+                    return;
+                }
+                localStorage.setItem(deployKey, JSON.stringify(files));
+                const deployUrl = `${window.location.origin}/editor.html?project=${projectId}&deploy=${encodeURIComponent(username + '_' + deploymentName)}`;
+                hideDeployPopup();
+                showPopup(`Your project is deployed at: ${deployUrl}`, deployUrl);
+            } catch (e) {
+                hideDeployPopup();
+                showPopup('Deployment failed: ' + e.message);
+            }
+        });
+
+        cancelDeploy.addEventListener('click', hideDeployPopup);
+        closePopup.addEventListener('click', hidePopup);
+        popupOverlay.addEventListener('click', () => {
+            hidePopup();
+            hideDeployPopup();
+            hideNewFilePopup();
+            hideNameProjectPopup();
+            document.querySelectorAll('.dropdown-content').forEach(content => content.classList.remove('show'));
+        });
+
+        submitProjectName.addEventListener('click', () => {
+            const name = projectNameInput.value.trim();
+            if (!name) {
+                showPopup('Please enter a project name.');
+                return;
+            }
+            localStorage.setItem(`codinghub_project_name_${projectId}`, name);
+            projectNameDisplay.textContent = name;
+            hideNameProjectPopup();
+        });
+
+        tipsToggle.addEventListener('click', () => {
+            tipsDropdown.classList.toggle('open');
+        });
+
+        function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    previewPane.requestFullscreen().then(() => {
+                        previewPane.classList.add('fullscreen');
+                        fullscreenBtnAlt.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>`;
+                    }).catch(() => {
+                        showPopup('Fullscreen mode is not supported in this browser.');
+                    });
+                } else {
+                    document.exitFullscreen().then(() => {
+                        previewPane.classList.remove('fullscreen');
+                        fullscreenBtnAlt.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>`;
+                    });
+                }
+            } catch (e) {
+                showPopup('Error toggling fullscreen: ' + e.message);
+            }
+        }
+
+        fullscreenBtnAlt.addEventListener('click', toggleFullscreen);
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebar.classList.toggle('hidden');
+        });
+
+        function loadSharedCode() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const encoded = urlParams.get('code');
+                if (encoded) {
+                    const files = JSON.parse(atob(encoded));
+                    saveFiles(files);
+                    updateFileList();
+                }
+            } catch (e) {
+                showPopup('Error loading shared code: ' + e.message);
+            }
+        }
+
+        function loadDeployedCode() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const deployKey = urlParams.get('deploy');
+                if (deployKey) {
+                    const files = localStorage.getItem(`deploy_${deployKey}`);
+                    if (files) {
+                        const parsed = JSON.parse(files);
+                        saveFiles(parsed);
+                        updateFileList();
+                        updatePreview();
+                        previewPane.classList.add('active');
+                        fileExplorer.style.display = 'none';
+                        editorPane.classList.remove('active');
+                        setActiveSidebarItem(previewBtn);
+                    } else {
+                        showPopup('No deployed project found for this key.');
+                    }
+                }
+            } catch (e) {
+                showPopup('Error loading deployed project: ' + e.message);
+            }
+        }
+
+        function initializeProjectName() {
+            const projectName = localStorage.getItem(`codinghub_project_name_${projectId}`);
+            if (projectName) {
+                projectNameDisplay.textContent = projectName;
+            } else {
+                showNameProjectPopup();
+            }
+        }
+
+        // Initialize
+        projectId = getProjectId();
+        if (!projectId) {
+            showPopup('No project specified. Redirecting to dashboard.');
+            setTimeout(() => window.location.href = '/dashboard', 2000);
+        } else {
+            initializeDefaultProject();
+            initializeProjectName();
+            loadSharedCode();
+            loadDeployedCode();
+        }
+    </script>
+</body>
+</html>

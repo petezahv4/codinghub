@@ -1,0 +1,19 @@
+{
+  "name": "CodingHub",
+  "author": "PeteZah",
+  "version": "1.0.0",
+  "description": "Coding Community",
+  "main": "server.js",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.3",
+    "nodemailer": "^6.9.15"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "16.x"
+  }
+}

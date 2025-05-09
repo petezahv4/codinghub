@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodingHub Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3b 100%);
+            color: #d1d5db;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        .top-nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: linear-gradient(to right, #1a1a3b, #2b2b5c);
+            border-bottom: 1px solid #3b3b7a;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            z-index: 1000;
+        }
+        .top-nav .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 1.5rem;
+        }
+        .login-container {
+            background: #0a0a23;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            padding: 3rem;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .login-container h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            letter-spacing: -0.025em;
+        }
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .login-container input {
+            padding: 1rem;
+            border: 1px solid #3b3b7a;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #d1d5db;
+            background: #2b2b5c;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .login-container input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        .login-container button {
+            padding: 1rem;
+            background-color: #6366f1;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .login-container button:hover {
+            background-color: #4f46e5;
+            transform: scale(1.03);
+        }
+        .signup-button {
+            background-color: #10b981;
+        }
+        .signup-button:hover {
+            background-color: #059669;
+            transform: scale(1.03);
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-weight: 500;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 1rem;
+                height: 64px;
+            }
+            .login-container {
+                padding: 2rem;
+                max-width: 90%;
+            }
+            .login-container h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="/" class="logo">CodingHub</a>
+    </div>
+    <div class="main-content">
+        <div class="login-container">
+            <h1>Sign in to CodingHub</h1>
+            <div id="error-message" class="error-message">
+                Invalid username or password. Please try again.
+            </div>
+            <form action="/login" method="GET">
+                <input type="text" name="user" placeholder="Username" required />
+                <input type="password" name="pass" placeholder="Password" required />
+                <button type="submit">Sign In</button>
+            </form>
+            <a href="/signup">
+                <button class="signup-button" style="width: 100%; margin-top: 1.5rem;">Create Account</button>
+            </a>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('state') === 'invalid') {
+            document.getElementById('error-message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
